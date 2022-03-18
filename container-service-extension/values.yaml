@@ -84,7 +84,7 @@ containerServiceExtension:
     create: false
     
   mqtt:
-    verify_ssl: false
+    verifySsl: false
 
   vcd:
     host: vcd.vmwire.com

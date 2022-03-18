@@ -5,7 +5,7 @@ metadata:
 data:
   config-not-encrypted.conf: |-
     mqtt:
-      verify_ssl: {{ .Values.containerServiceExtension.mqtt.verify_ssl }}
+      verify_ssl: {{ .Values.containerServiceExtension.mqtt.verifySsl }}
 
     vcd:
       host: {{ .Values.containerServiceExtension.vcd.host }}
