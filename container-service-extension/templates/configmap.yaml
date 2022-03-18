@@ -49,6 +49,13 @@ metadata:
         # Script to configure and run CSE as a container, use at your own risk, no support is given.
         # Tested in Kubernetes 1.22.5, Tanzu Kubernetes Grid
 
+        # Run as cse user
+        su - cse
+        source /opt/vmware/cse/python/bin/activate
+        
+        # Make directory for config
+        mkdir -p /opt/vmware/cse/config
+
         # Set environment variables
         cat >> ~/.bash_profile << EOF
         # For Container Service Extension
@@ -68,13 +75,19 @@ metadata:
         - container_service_extension.client.cse
         EOF
 
-        # Create service account, if already done previously then comment this section out.
-        #vcd login vcd.vmwire.com system administrator -p Vmware1!
-        #cse create-service-role vcd.vmwire.com
-        # Enter system administrator username and password
+        # Create CSE service role
+        {{- if .Values.containerServiceExtension.cseServiceRole.create }}
+        # Login to VCD first
+        vcd login {{ .Values.containerServiceExtension.vcd.host }} system {{ .Values.containerServiceExtension.vcd.username }} -p {{ .Values.containerServiceExtension.vcd.password }}
+        cse create-service-role {{ .Values.containerServiceExtension.vcd.host }} -s -u {{ .Values.containerServiceExtension.vcd.username }} -p {{ .Values.containerServiceExtension.vcd.password }}
+        {{- end }}
 
-        # Create VCD service account for CSE, if already done previously then comment this section out.
-        #vcd user create --enabled svc-cse Vmware1! "CSE Service Role"
+        # Create VCD service account for CSE
+        {{- if .Values.containerServiceExtension.cseServiceAccount.create }}
+        # Login to VCD first
+        vcd login {{ .Values.containerServiceExtension.vcd.host }} system {{ .Values.containerServiceExtension.vcd.username }} -p {{ .Values.containerServiceExtension.vcd.password }}
+        vcd user create --enabled {{ .Values.containerServiceExtension.cseServiceAccount.user }} {{ .Values.containerServiceExtension.cseServiceAccount.password }} "CSE Service Role"
+        {{- end }}
 
         # Encrypt config file and set permissionsa
         echo " Encrypt config file, place into /opt/vmware/cse/config/config.yaml and make executable"
@@ -89,11 +102,15 @@ metadata:
         echo "List current available templates for Kubernetes nodes"
         cse template list
 
-        # Install CSE, comment out if CSE is already installed in your environment, for example deployed in a VM. This helm chart can replace the VM.
-        #cse install -c /opt/vmware/cse/config/config.yaml
-
         # Install CSE
+        {{- if .Values.containerServiceExtension.cseInstall }}
+        #cse install -c /opt/vmware/cse/config/config.yaml
+        {{- end }}
+
+        # Upgrade CSE, if CSE is already installed in your environment, for example deployed in a VM. This helm chart can replace the VM.
+        {{- if .Values.containerServiceExtension.cseUpgrade }}
         #cse upgrade -c /opt/vmware/cse/config/config.yaml
+        {{- end }}
 
         # Setup cse.sh
         cat > /opt/vmware/cse/cse.sh << EOF

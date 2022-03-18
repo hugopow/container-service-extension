@@ -25,16 +25,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "container-service-extension.serviceAccountName" . }}
-      initContainers:
-      - name: init-container
-        image: busybox:1.28
-        command: ["/bin/sh"]
-        args: ["/scripts-dir/config-not-encrypted.sh"]
-        volumeMounts:
-        - mountPath: /home/vmware
-          name: cse-data
-        - name: scripts-vol
-          mountPath: /scripts-dir
       terminationGracePeriodSeconds: 10
       containers:
       - name: {{ .Chart.Name }}
@@ -45,17 +35,14 @@ spec:
         command: ["/bin/sh"]
         args: ["/cse-scripts-dir/run-cse.sh"]
         volumeMounts:
-        - mountPath: /home/vmware
-          name: cse-data
+        - mountPath: /cse-config-dir
+          name: cse-config-vol
         - name: cse-scripts-vol
           mountPath: /cse-scripts-dir
       volumes:
-      - name: cse-data
-        persistentVolumeClaim:
-         claimName: {{ .Values.pvcName }}
-      - name: scripts-vol
+      - name: cse-config-vol
         configMap:
-          name: scripts-configmap
+          name: cse-config-configmap
       - name: cse-scripts-vol
         configMap:
           name: run-cse-configmap

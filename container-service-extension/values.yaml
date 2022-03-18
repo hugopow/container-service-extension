@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-# Availability zones in deployment.yaml are setup for TKG and must match VsphereFailureDomain and VsphereDeploymentZones
+# Availability zones in deployment.yaml are setup for TKG and must match VsphereFailureDomain and VsphereDeploymentZones, use only with RabbitMQ
 availabilityZones:
   enabled: false
 
@@ -71,6 +71,18 @@ affinity: {}
 cseConfigPassword: Vmware1!
 
 containerServiceExtension:
+  cseInstall: false
+  
+  cseUpgrade: true
+
+  cseServiceAccount:
+    create: false
+    user: svc-cse
+    password: Vmware1!
+  
+  cseServiceRole:
+    create: false
+    
   mqtt:
     verify_ssl: false
 
