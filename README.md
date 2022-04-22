@@ -26,7 +26,7 @@ The configuration and installation is a very simple process:
     Package your changes to a new helm chart and upload to your repository
     Install the helm chart with a single command such as
 
-helm install cse oci://harbor.vmwire.com/container-service-extension --version 0.2.0 -n container-service-extension -f /home/container-service-extension/values.yaml
+helm install cse oci://harbor.vmwire.com/library/container-service-extension --version 0.2.0 -n container-service-extension -f /home/container-service-extension/values.yaml
 
 Don't forget to download the photon-cse image from my Harbor registry to save bandwidth, both yours and mine. (big grin).
 
